@@ -1,88 +1,151 @@
+// Player
+let player1_score = 0;
+let player2_score = 0;
+
 // Canvas Dimensions
-let canvasWidth = 680
-let canvasHeight = 340
+const canvasWidth = 680
+const canvasHeight = 340
 
 // Paddle Dimensions
-let paddleWidth = 12
-let paddleHeight = 50
+const paddleWidth = 12
+const paddleHeight = 50
 
 class Paddle {
-  constructor(x, y, width, height) {
+  constructor(x, y, width, height, speed=5) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.speed = speed;
   }
 }
 
-// Paddle positions
-let L_paddleY = canvasHeight / 2 - paddleHeight / 2;
-let R_paddleY = canvasHeight / 2 - paddleHeight / 2 // same for both left paddle and right paddle 
-
-lPaddle = new Paddle(50, L_paddleY, paddleWidth, paddleHeight);
-rPaddle = new Paddle(canvasWidth - 50, R_paddleY, paddleWidth, paddleHeight);
+let lPaddle 
+let rPaddle
 
 // Ball properties
 let ballX = canvasWidth / 2;
 let ballY = canvasHeight / 2;
 
 class Ball {
-  constructor(x, y, diameter, speed = 5) {
+  constructor(x, y, radius, speed = 5) {
     this.x = x;
     this.y = y;
-    this.diameter = diameter;
-    this.speed = speed;
+    this.dx = speed;
+    this.dy = speed;
+    this.r = radius;
   }
 
   collides(paddle) {
-    if (ball.x + ball.r > paddle) {
+    if (ball.x + ball.r < paddle.x || ball.x - ball.r > paddle.x + paddle.width) {
       return false
     }
-
+    
+    if (ball.y + ball.r < paddle.y || ball.y - ball. r > paddle.y + paddle.height) {
+      return false
+    }
     return true
+  }
+
+  reset() {
+    this.x = ballX;
+    this.y = ballY;
+    this.dx = 5;
+    this.dy = 5;
+    this.r = 3;
   }
 }
 
-let ball = new Ball(ballX, ballY, 12);
 
+let paddleHitSd 
+let wallHitSd
+let scoreSd 
+
+let ball;
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
+  paddleHitSd = loadSound('sounds/paddle_hit.wav');
+  wallHitSd = loadSound('sounds/wall_hit.wav');
+  scoreSd = loadSound('sounds/score.wav');
+  ball = new Ball(ballX, ballY, 6);
+  lPaddle = new Paddle(50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
+  rPaddle = new Paddle(canvasWidth - 50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
 }
 
 function draw() {
   background(0);
-  // left paddle 
-  rect(50, L_paddleY, paddleWidth, paddleHeight);
-  // right paddle
-  rect(canvasWidth - 50, R_paddleY, paddleWidth, paddleHeight)
+
+  // render left paddle 
+  rect(lPaddle.x, lPaddle.y, lPaddle.width, lPaddle.height);
+
+  //  render right paddle
+  rect(rPaddle.x, rPaddle.y, rPaddle.width, rPaddle.height);
 
   // render ball
   circle(ball.x, ball.y, 12)
 
-  //ball.x += ball.speed;
+   // render score
+   fill(255,255,255);
+   textSize(32)
+   text(player1_score, 40, 40);
+  textSize(32)
+   text(player2_score, canvasWidth - 40, 40)
+
+  // Ball movement
+  ball.x += ball.dx ;
   ball.y += ball.dy;
-  ball.x += ball.dx;
+
+  // Wall collision
   if (ball.y + ball.r >= canvasHeight || ball.y - ball.r <= 0) {
-    ball.dy *= -1 * random(2);
+    ball.dy *= -1 * random(1, 1.02);
+    wallHitSd.play();
   }
 
-  if (keyIsDown(87)) {
-    if (L_paddleY >= 0) {
-      L_paddleY -= 5;
+  if (ball.x + ball.r >= canvasWidth) {
+    player1_score += 1;
+    scoreSd.play()
+    ball.reset();
+  }
+
+  else if (ball.x - ball.r <= 0) {
+    player2_score += 1;
+    scoreSd.play();
+    ball.reset();
+  }
+
+  // Paddle collision
+  if (ball.collides(lPaddle) || ball.collides(rPaddle)) {
+    ball.dx *= -1 * random(1, 1.0002);
+    ball.dy *= -1 * random(1, 1.0002);
+    paddleHitSd.play();
+  }
+
+  if (keyIsDown(87)) { // When "w" is pressed, move left paddle up
+    if (lPaddle.y >= 0) {
+      lPaddle.y -= lPaddle.speed;
     }
-  } else if (keyIsDown(83)) {
-    if (L_paddleY <= canvasHeight - paddleHeight) {
-      L_paddleY += 5;
+  } else if (keyIsDown(83)) { // When "S" is pressed, move left paddle down
+    if (lPaddle.y <= canvasHeight - paddleHeight) {
+      lPaddle.y += lPaddle.speed;
     }
   }
 
   if (keyIsDown(UP_ARROW)) {
-    if (R_paddleY >= 0) {
-      R_paddleY -= 5;
+    if (rPaddle.y >= 0) {
+      rPaddle.y -= rPaddle.speed;
     }
   } else if (keyIsDown(DOWN_ARROW)) {
-    if (R_paddleY <= canvasHeight - paddleHeight) {
-      R_paddleY += 5;
+    if (rPaddle.y <= canvasHeight - paddleHeight) {
+      rPaddle.y += rPaddle.speed;
     }
   }
 }
+
+function keyPressed() {
+  if (keyIsDown(32)) {
+    ball.reset()
+   
+  }
+  return false;
+}
+
