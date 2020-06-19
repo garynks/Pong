@@ -3,12 +3,12 @@ let player1_score = 0;
 let player2_score = 0;
 
 // Canvas Dimensions
-const canvasWidth = 680
-const canvasHeight = 340
+const canvasWidth = 1280
+const canvasHeight = 720
 
 // Paddle Dimensions
-const paddleWidth = 12
-const paddleHeight = 50
+const paddleWidth = 24
+const paddleHeight = 100
 
 class Paddle {
   constructor(x, y, width, height, speed=5) {
@@ -52,10 +52,14 @@ class Ball {
     this.y = ballY;
     this.dx = 5;
     this.dy = 5;
-    this.r = 3;
+    this.r = radius;
   }
 }
 
+let pixelFont;
+function preload() {
+  pixelFont = loadFont('font.ttf')
+}
 
 let paddleHitSd 
 let wallHitSd
@@ -67,7 +71,7 @@ function setup() {
   paddleHitSd = loadSound('sounds/paddle_hit.wav');
   wallHitSd = loadSound('sounds/wall_hit.wav');
   scoreSd = loadSound('sounds/score.wav');
-  ball = new Ball(ballX, ballY, 6);
+  ball = new Ball(ballX, ballY, 12);
   lPaddle = new Paddle(50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
   rPaddle = new Paddle(canvasWidth - 50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
 }
@@ -87,9 +91,11 @@ function draw() {
    // render score
    fill(255,255,255);
    textSize(32)
+   textFont(pixelFont);
    text(player1_score, 40, 40);
-  textSize(32)
-   text(player2_score, canvasWidth - 40, 40)
+   textSize(32)
+   textFont(pixelFont);
+   text(player2_score, canvasWidth - 40, 40);
 
   // Ball movement
   ball.x += ball.dx ;
@@ -115,8 +121,8 @@ function draw() {
 
   // Paddle collision
   if (ball.collides(lPaddle) || ball.collides(rPaddle)) {
-    ball.dx *= -1 * random(1, 1.0002);
-    ball.dy *= -1 * random(1, 1.0002);
+    ball.dx *= -1 * random(1, 1.002);
+    ball.dy *= random(1, 1.002);
     paddleHitSd.play();
   }
 
