@@ -3,12 +3,12 @@ let player1_score = 0;
 let player2_score = 0;
 
 // Canvas Dimensions
-const canvasWidth = 1280
-const canvasHeight = 720
+const canvasWidth = window.innerWidth - 20
+const canvasHeight = window.innerHeight - 20
 
 // Paddle Dimensions
 const paddleWidth = 24
-const paddleHeight = 100
+const paddleHeight = canvasHeight / 8
 
 class Paddle {
   constructor(x, y, width, height, speed=5) {
@@ -37,11 +37,12 @@ class Ball {
   }
 
   collides(paddle) {
-    if (ball.x + ball.r < paddle.x || ball.x - ball.r > paddle.x + paddle.width) {
+    // check if ball is 
+    if (ball.x - ball.r > paddle.x + paddle.width || paddle.x - paddle.width > ball.x + ball.r) {
       return false
     }
     
-    if (ball.y + ball.r < paddle.y || ball.y - ball. r > paddle.y + paddle.height) {
+    if (ball.y + ball.r < paddle.y - paddle.height || ball.y - ball. r > paddle.y + paddle.height) {
       return false
     }
     return true
@@ -120,8 +121,8 @@ function draw() {
 
   // Paddle collision
   if (ball.collides(lPaddle) || ball.collides(rPaddle)) {
-    ball.dx *= -1 * random(1, 1.002);
-    ball.dy *= random(1, 1.002);
+    ball.dx *= -1 * random(1, 1.005);
+    ball.dy *= random(1, 1.005);
     paddleHitSd.play();
   }
 
