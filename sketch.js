@@ -68,9 +68,9 @@ let scoreSd
 let ball;
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
-  paddleHitSd = loadSound('sounds/paddle_hit.wav');
-  wallHitSd = loadSound('sounds/wall_hit.wav');
-  scoreSd = loadSound('sounds/score.wav');
+  paddleHitSd = loadSound('./sounds/paddle_hit.wav');
+  wallHitSd = loadSound('./sounds/wall_hit.wav');
+  scoreSd = loadSound('./sounds/score.wav');
   ball = new Ball(ballX, ballY, 12);
   lPaddle = new Paddle(50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
   rPaddle = new Paddle(canvasWidth - 50, canvasHeight / 2 - paddleHeight / 2, paddleWidth, paddleHeight);
@@ -147,6 +147,7 @@ function draw() {
   }
 }
 
+// Pressing on the space bar resets the game
 function keyPressed() {
   if (keyIsDown(32)) {
     ball.reset()
