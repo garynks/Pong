@@ -52,7 +52,6 @@ class Ball {
     this.y = ballY;
     this.dx = 5;
     this.dy = 5;
-    this.r = radius;
   }
 }
 
